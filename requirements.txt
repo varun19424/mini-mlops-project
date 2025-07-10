@@ -15,3 +15,4 @@ nltk
 pandas
 numpy
 scikit-learn
+xgboost
