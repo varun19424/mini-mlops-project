@@ -3,7 +3,7 @@
 # Import necessary libraries
 import mlflow
 import mlflow.sklearn
-from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
+from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer, ENGLISH_STOP_WORDS
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn.naive_bayes import MultinomialNB
@@ -13,8 +13,7 @@ from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_sc
 import pandas as pd
 import re
 import string
-from nltk.corpus import stopwords
-from nltk.stem import WordNetLemmatizer
+from nltk.stem import PorterStemmer
 import numpy as np
 import os
 
@@ -29,15 +28,15 @@ df.head()
 
 # Define text preprocessing functions
 def lemmatization(text):
-    """Lemmatize the text."""
-    lemmatizer = WordNetLemmatizer()
+    """Stem the text."""
+    stemmer = PorterStemmer()
     text = text.split()
-    text = [lemmatizer.lemmatize(word) for word in text]
+    text = [stemmer.stem(word) for word in text]
     return " ".join(text)
 
 def remove_stop_words(text):
     """Remove stop words from the text."""
-    stop_words = set(stopwords.words("english"))
+    stop_words = set(ENGLISH_STOP_WORDS)
     text = [word for word in str(text).split() if word not in stop_words]
     return " ".join(text)
 
@@ -56,7 +55,7 @@ def removing_punctuations(text):
     """Remove punctuations from the text."""
     text = re.sub('[%s]' % re.escape(string.punctuation), ' ', text)
     text = text.replace('؛', "")
-    text = re.sub('\s+', ' ', text).strip()
+    text = re.sub(r'\s+', ' ', text).strip()
     return text
 
 def removing_urls(text):
@@ -87,7 +86,7 @@ df = df[x]
 df['sentiment'] = df['sentiment'].replace({'sadness':0, 'happiness':1})
 
 # Set the experiment name
-mlflow.set_experiment("Bow vs TfIdf")
+mlflow.set_experiment("Bow-vs-TfIdf")
 
 # Define feature extraction methods
 vectorizers = {
